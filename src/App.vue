@@ -7,11 +7,33 @@
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
-
+import axios from 'axios'
+import Airtable from 'airtable'
 export default {
   name: 'App',
   components: {
     HelloWorld
+  },
+  mounted () {
+    axios.get('https://api64.ipify.org?format=json').then((res) => {
+      const ip = res.data.ip
+      let base = new Airtable({apiKey: 'keyIAotyly94UhxKo'}).base('appGQaW9NULfpN9BR')
+      base('Table 1').create([
+        {
+          "fields": {
+            ip: ip
+          }
+        }
+      ], function(err, records) {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        records.forEach(function (record) {
+          console.log(record.getId());
+        });
+      });
+    })
   }
 }
 </script>
